@@ -428,13 +428,13 @@ void bimanual_catching_module::initKinematics_left() {
 
     mSKinematicChain_left = new sKinematics(KUKA_DOF, dt);
 
-    mSKinematicChain_left->setDH(0,  0.0,  0.3105, M_PI_2, 0.0, 1,  DEG2RAD( -85.), DEG2RAD( 85.), DEG2RAD(98.0)*0.95);
-    mSKinematicChain_left->setDH(1,  0.0,  0.00,-M_PI_2, 0.0, 1,  DEG2RAD( -90.), DEG2RAD( 90.), DEG2RAD(98.0)*0.90);
-    mSKinematicChain_left->setDH(2,  0.0,  0.40,-M_PI_2, 0.0, 1,  DEG2RAD(-100.), DEG2RAD(100.), DEG2RAD(100.0)*0.95);
-    mSKinematicChain_left->setDH(3,  0.0,  0.00, M_PI_2, 0.0, 1,  DEG2RAD(-120.), DEG2RAD(120.), DEG2RAD(130.0)*0.95);
-    mSKinematicChain_left->setDH(4,  0.0,  0.39, M_PI_2, 0.0, 1,  DEG2RAD(-140.), DEG2RAD(140.), DEG2RAD(140.0)*0.95);
-    mSKinematicChain_left->setDH(5,  0.0,  0.00,-M_PI_2, 0.0, 1,  DEG2RAD( -90.), DEG2RAD( 90.), DEG2RAD(180.0)*0.90); // reduced joint angle to save the fingers
-    mSKinematicChain_left->setDH(6,  0.0,  0.07,    0.0, 0.0, 1,  DEG2RAD(-170.), DEG2RAD(170.), DEG2RAD(184.0)*0.95); // for sim lab
+    mSKinematicChain_left->setDH(0,  0.0,  0.3105, M_PI_2, 0.0, 1,  DEG2RAD( -85.), DEG2RAD( 85.), DEG2RAD( 98.0)*0.95);
+    mSKinematicChain_left->setDH(1,  0.0,  0.00,  -M_PI_2, 0.0, 1,  DEG2RAD( -90.), DEG2RAD( 90.), DEG2RAD( 98.0)*0.90);
+    mSKinematicChain_left->setDH(2,  0.0,  0.40,  -M_PI_2, 0.0, 1,  DEG2RAD(-100.), DEG2RAD(100.), DEG2RAD(100.0)*0.95);
+    mSKinematicChain_left->setDH(3,  0.0,  0.00,   M_PI_2, 0.0, 1,  DEG2RAD(-120.), DEG2RAD(120.), DEG2RAD(130.0)*0.95);
+    mSKinematicChain_left->setDH(4,  0.0,  0.39,   M_PI_2, 0.0, 1,  DEG2RAD(-140.), DEG2RAD(140.), DEG2RAD(140.0)*0.95);
+    mSKinematicChain_left->setDH(5,  0.0,  0.00,  -M_PI_2, 0.0, 1,  DEG2RAD( -90.), DEG2RAD( 90.), DEG2RAD(180.0)*0.90); // reduced joint angle to save the fingers
+    mSKinematicChain_left->setDH(6,  0.0,  0.07,      0.0, 0.0, 1,  DEG2RAD(-170.), DEG2RAD(170.), DEG2RAD(184.0)*0.95); // for sim lab
 
 
     double T0[4][4];
