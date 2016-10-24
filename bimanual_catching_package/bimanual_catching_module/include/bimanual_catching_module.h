@@ -24,6 +24,7 @@
 #include "RobotLib/KinematicChain.h"
 #include "sensor_msgs/JointState.h"
 #include "std_msgs/Float32MultiArray.h"
+#include "std_msgs/Float64MultiArray.h"
 #include "std_msgs/String.h"
 #include "geometry_msgs/Pose.h"
 #include "kuka_fri_bridge/JointStateImpedance.h"
@@ -34,15 +35,15 @@
 
 #include "bimanual_ds.h"
 
-//double cReady_left[]  = {-PI/2.0, -PI/4.0, 0.0, -PI/2.0, 0.0, PI/2.0, 0.0};
-double cReady_left[]  = {-PI/2.0, -PI/4.0, 0.0, -PI/2.0, 0.0, 0.0, 0.0};
-double cReady_right[]  = {-PI/2.0, PI/4.0, 0.0, PI/2.0, PI/2.0, PI/4.0, 0.0};
+//double cReady_left[]  = {-PI/2.0, -PI/4.0, 0.0, -PI/2.0, 0.0, 0.0, 0.0};
+//double cReady_right[]  = {-PI/2.0, PI/4.0, 0.0, PI/2.0, PI/2.0, PI/4.0, 0.0};
+double cReady_left[]  = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+double cReady_right[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
 enum ENUM_COMMAND {COMMAND_INITIAL, COMMAND_READY, COMMAND_CATCH, COMMAND_NONE};
 enum ENUM_PLANNER {PLANNER_CARTESIAN, PLANNER_JOINT, PLANNER_NONE};
 enum ENUM_Robot {Left, Right};
 enum ENUM_AXIS {AXIS_X, AXIS_Y, AXIS_Z};
-//enum PREDICTION_MSG {MSG_CATCHING=0, MSG_CURRENTPOSE, MSG_ALL};
 enum Command {Com_NONE, Com_INIT, Com_Throw};
 
 
@@ -79,7 +80,7 @@ protected:
 
     double						dt;
 
-    int 						KUKA_DOF;
+    int 						ROBOT_DOF;
     int							IK_CONSTRAINTS;
     int                         mEndEffectorId;
 
@@ -117,8 +118,6 @@ protected:
     Vector						RJointPos_left;
     Vector						RJointPos_left_Error;
 
-
-
     Vector 						JointTargetPos_left;
     Vector 						JointFinalPos_left;
     Vector 						JointDesVel_left;
@@ -137,8 +136,10 @@ protected:
     Vector                      mJointVelLimitsUp_right;
     Vector                      mJointVelLimitsDn_right;
 
-    Vector                      limLow;
-    Vector                      limHigh;
+    Vector                      limLow_left;
+    Vector                      limHigh_left;
+    Vector                      limLow_right;
+    Vector                      limHigh_right;
 
 
 
@@ -196,7 +197,8 @@ protected:
 
     bimanual_ds					*force_dynamical_system;
 
-
+    Vector                      d_L_d;
+    Vector                      d_R_d;
 
 
 
@@ -206,14 +208,13 @@ protected:
     int                         cnt_saving;
     double                      ttc;
 
-    ofstream                    kevin_objpose;
-    ofstream                    kevin_objvel;
-    ofstream                    kevin_attpose;
-    ofstream                    kevin_VOpose;
+    ofstream                    data_save;
 
 
-    ros::Subscriber             sub_robot_left_jointPos;
-    ros::Subscriber             sub_robot_right_jointPos;
+//    ros::Subscriber             sub_robot_left_jointPos;
+//    ros::Subscriber             sub_robot_right_jointPos;
+    ros::Subscriber             sub_robot_left_jointPos_coman;
+    ros::Subscriber             sub_robot_right_jointPos_coman;
     ros::Subscriber				sub_object_pos;
     ros::Subscriber				sub_object_vel;
     ros::Subscriber				sub_attractor_pos;
@@ -221,8 +222,11 @@ protected:
     ros::Subscriber				sub_ttc;
 
     ros::Publisher 				pub_command;
-    ros::Publisher  			pub_command_pos_left;
-    ros::Publisher 				pub_command_pos_right;
+//    ros::Publisher  			pub_command_pos_left;
+//    ros::Publisher 			pub_command_pos_right;
+    ros::Publisher  			pub_command_pos_left_coman;
+    ros::Publisher 				pub_command_pos_right_coman;
+
     ros::Publisher  			pub_pos_END_left;
     ros::Publisher  			pub_pos_END_right;
     ros::Publisher              pub_pos_desired_END_left;
@@ -244,8 +248,6 @@ protected:
     void 						chatterCallback_attractor_postion(const geometry_msgs::Pose & msg);
     void 						chatterCallback_attractor_velocity(const geometry_msgs::Pose & msg);
     void 						chatterCallback_ttc(const std_msgs::String::ConstPtr& msg);
-
-
 
 };
 

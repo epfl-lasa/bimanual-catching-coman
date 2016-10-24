@@ -1,11 +1,18 @@
 #include "ball_motion_estimation.h"
 
 
-void chatterCallback_object(const geometry_msgs::Pose & msg) {
+//void chatterCallback_object(const geometry_msgs::Pose & msg) {
 
-    Object_pos_T(0) = msg.position.x;
-    Object_pos_T(1) = msg.position.y;
-    Object_pos_T(2) = msg.position.z;
+//    Object_pos_T(0) = msg.position.x;
+//    Object_pos_T(1) = msg.position.y;
+//    Object_pos_T(2) = msg.position.z;
+//}
+
+void chatterCallback_object(const std_msgs::Float64MultiArray& msg) {
+
+    Object_pos_T(0) = msg.data[0];
+    Object_pos_T(1) = msg.data[1];
+    Object_pos_T(2) = msg.data[2];
 }
 
 
@@ -33,7 +40,6 @@ void commandCallback(const std_msgs::String::ConstPtr& msg) {
         mTrackingStatus = TRACKINGSTATUS_NONE;
 
         break;
-
     }
 }
 
@@ -85,7 +91,7 @@ void *MotionCaptureReading(void *ptr) {
             mMeasurementIsUpdating = true;
             mMeasurement.time = (double)(lCurrentTime- mStartTime).total_milliseconds() / 1000.;
             mMeasurement.vPos = pos;
-//            mMeasurement.vOri=Rotation_Matrix;
+
             mMeasurementIsNew = true;
             mMeasurementIsUpdating = false;
             pos_old = pos;
@@ -131,7 +137,8 @@ void *EstimateTTC(void *ptr) {
                     cout << "Current distance : " << lMeasurement.vPos(0) << endl;
                     counter = 1;
 
-                    if( (lMeasurement.vPos(0) < -1.2) ) {
+//                    if( (lMeasurement.vPos(0) < -1.2) ) {
+                    if( (lMeasurement.vPos(0) > 1.2) ) {
                         mFirstPosture = lMeasurement.vPos;
                         mFirstPosture.Print("mFirstPosture");
                         mTrackingStatus = TRACKINGSTATUS_PREREADY;
@@ -141,7 +148,8 @@ void *EstimateTTC(void *ptr) {
                 else if (mTrackingStatus==TRACKINGSTATUS_PREREADY) {
                     counter = 0;
 
-                    if( lMeasurement.vPos(0) > (mFirstPosture(0) + 0.1) ) {
+//                    if( lMeasurement.vPos(0) > (mFirstPosture(0) + 0.1) ) {
+                    if( lMeasurement.vPos(0) < (mFirstPosture(0) - 0.1) ) {
 //                        mMotionStartTime = lCurrentTime;
                         mObjTrajectoryCount = 0;
 //                        mCatchingPostureCount =0;
@@ -166,7 +174,8 @@ void *EstimateTTC(void *ptr) {
                         lVel(2) = ( lMeasurement.vPos(2)-mMeasurement_prev.vPos(2) ) / lDuration;
                     }
 
-                    if (lMeasurement.vPos(0) < 0.0) {
+//                    if (lMeasurement.vPos(0) < 0.0) {
+                    if (lMeasurement.vPos(0) > 0.0) {
                         if (lVel(0)!=0.0)   ttc = abs(lMeasurement.vPos(0) / lVel(0));
                         else                ttc = 5.0;
                     }
@@ -178,8 +187,6 @@ void *EstimateTTC(void *ptr) {
                     msg_ttc.data = buffer;
                     pub_ttc.publish(msg_ttc);
 
-//                    cout<<"lVel: "<<lVel(0)<<" "<<lVel(1)<<" "<<lVel(2)<<"    ttc : "<<ttc<<endl;
-//                    cout<<"time : "<<(double)(lCurrentTime-lPrevTime).total_milliseconds()/1000.<<endl;
 
                     mMeasurement_prev = lMeasurement;
                     lPrevTime = lCurrentTime;
@@ -193,13 +200,10 @@ void *EstimateTTC(void *ptr) {
                     msg_objvel.position.y = lVel(1);
                     msg_objvel.position.z = lVel(2);
 
-//                    msg_attpos.position.x = lMeasurement.vPos(0) +0.3;
-//                    msg_attpos.position.y = lMeasurement.vPos(1);
-//                    msg_attpos.position.z = lMeasurement.vPos(2) -0.2;
-
                     msg_attpos.position.x = lMeasurement.vPos(0);
                     msg_attpos.position.y = lMeasurement.vPos(1);
                     msg_attpos.position.z = lMeasurement.vPos(2);
+
 
                     msg_attvel.position.x = lVel(0);
                     msg_attvel.position.y = lVel(1);
@@ -212,18 +216,11 @@ void *EstimateTTC(void *ptr) {
                     pub_attvel.publish(msg_attvel);
 
                 }
-//                else if (mTrackingStatus==TRACKINGSTATUS_POSTREADY) {
-
-//                }
-
 
             }
             else {  // no new measurement
                 usleep(10.);
             }
-
-
-
 
 
             break;
@@ -259,8 +256,6 @@ int main(int argc, char** argv) {
     pub_ttc = n.advertise<std_msgs::String>("/ttc", 3);
 
     mStartTime = boost::posix_time::microsec_clock::local_time();
-
-    cout<<"hello"<<endl;
 
 
     mMocapStatus = MOCAP_IDLE;

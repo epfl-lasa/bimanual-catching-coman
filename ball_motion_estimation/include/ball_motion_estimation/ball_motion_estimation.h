@@ -6,6 +6,7 @@
 #include <boost/timer.hpp>
 #include "ros/ros.h"
 #include "std_msgs/String.h"
+#include "std_msgs/Float64MultiArray.h"
 #include "geometry_msgs/Pose.h"
 #include <sstream>
 #include <iostream>
@@ -34,7 +35,6 @@ using namespace std;
 
 enum MOCAP_STATUS {MOCAP_IDLE, MOCAP_OBSERVING, MOCAP_TRACKING, MOCAP_SAVE};
 enum TRACKING_STATUS{TRACKINGSTATUS_NONE, TRACKINGSTATUS_PREREADY, TRACKINGSTATUS_TRACKING, TRACKINGSTATUS_POSTREADY};
-
 enum Command {Com_NONE,Com_INIT, Com_THROW};
 
 
@@ -47,7 +47,6 @@ ros::Publisher pub_objvel;
 ros::Publisher pub_attpos;
 ros::Publisher pub_attvel;
 ros::Publisher pub_ttc;
-
 
 Vector3 Object_pos_T;
 Command COM;

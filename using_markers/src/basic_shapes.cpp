@@ -1,7 +1,6 @@
-        #include <ros/ros.h>
+#include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
 #include "geometry_msgs/Pose.h"
-
 
 
 visualization_msgs::Marker marker;
@@ -29,13 +28,14 @@ void chatterCallback_object(const geometry_msgs::Pose & msg)
 
 	marker.pose.position.x = msg.position.x;
 	marker.pose.position.y = msg.position.y;
-	marker.pose.position.z = msg.position.z-0.4/2;
+    marker.pose.position.z = msg.position.z;
 	marker.pose.orientation.w = msg.orientation.w;
 	marker.pose.orientation.x = msg.orientation.x;
 	marker.pose.orientation.y = msg.orientation.y;
 	marker.pose.orientation.z = msg.orientation.z;
 	marker_pub.publish(marker);
 }
+
 
 void chatterCallback_attractor(const geometry_msgs::Pose & msg)
 {
@@ -46,7 +46,7 @@ void chatterCallback_attractor(const geometry_msgs::Pose & msg)
 
     marker_att.pose.position.x = msg.position.x;
     marker_att.pose.position.y = msg.position.y;
-    marker_att.pose.position.z = msg.position.z-0.4/2;
+    marker_att.pose.position.z = msg.position.z;
     marker_att.pose.orientation.w = msg.orientation.w;
     marker_att.pose.orientation.x = msg.orientation.x;
     marker_att.pose.orientation.y = msg.orientation.y;
@@ -124,8 +124,8 @@ int main( int argc, char** argv )
     marker_desired_left_pub = n.advertise<visualization_msgs::Marker>("visualization_marker_desired_L", 0);
     marker_desired_right_pub = n.advertise<visualization_msgs::Marker>("visualization_marker_desired_R", 0);
 
-//    ros::Subscriber	sub_object = n.subscribe("/catch/objpos", 3, chatterCallback_object);
-    ros::Subscriber	sub_object = n.subscribe("/object", 3, chatterCallback_object);
+    ros::Subscriber	sub_object = n.subscribe("/catch/objpos", 3, chatterCallback_object);
+//    ros::Subscriber	sub_object = n.subscribe("/object", 3, chatterCallback_object);
     ros::Subscriber	sub_attractor = n.subscribe("/catch/attpos", 3, chatterCallback_attractor);
 	ros::Subscriber	sub_object_virtual = n.subscribe("/object_virtual/position", 3, chatterCallback_object_virtual);
 
@@ -231,7 +231,6 @@ int main( int argc, char** argv )
 //    marker_pub.publish(marker);
 //    marker_att_pub.publish(marker_att);
 //    marker_virtual_pub.publish(marker_virtual);
-
 
 
 	ros::spin();

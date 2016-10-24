@@ -102,12 +102,14 @@ int main(int argc, char **argv) {
     Shift_left_P_O(1)=-0.40;
     Shift_right_P_O(1)=0.40;
 
-    P_I[0]=-3.5;P_I[1]=-0.5;P_I[2]=-0.0;
-    DP_I[0]=1.2;DP_I[1]=0.0;DP_I[2]=1.0; //DP_I[0]=1.2;DP_I[1]=0.0;DP_I[2]=1.1;
+    // initial values
+    P_I[0] = 5.0;  P_I[1] = 0.0;  P_I[2] = 0.0;
+    //DP_I[0] = -1.0;  DP_I[1] = 0.0;  DP_I[2] = 1.15; //DP_I[0]=1.2;DP_I[1]=0.0;DP_I[2]=1.1;
+    DP_I[0] = -2.5;  DP_I[1] = 0.0;  DP_I[2] = 1.0;
 
-    P_O(0)=P_I[0];P_O(1)=P_I[1];P_O(2)=P_I[2];
-    DP_O(0)=DP_I[0];DP_O(1)=DP_I[1];DP_O(2)=DP_I[2];
-    DDP_O(0)=0.0;DDP_O(1)=0.0;DDP_O(2)=-0.5;//-0.5
+    P_O(0) = P_I[0];    P_O(1) = P_I[1];    P_O(2) = P_I[2];
+    DP_O(0) = DP_I[0];  DP_O(1) = DP_I[1];  DP_O(2) = DP_I[2];
+    DDP_O(0) = 0.0;     DDP_O(1) = 0.0;     DDP_O(2) = -0.5;
 
     Vector DDhandle;
     DDhandle.Resize(3);
@@ -198,11 +200,15 @@ int main(int argc, char **argv) {
         if (COM==Com_INIT)
         {
             double AA=0.1;
-            P_O(0)=P_I[0]+fRand(-AA,AA);P_O(1)=P_I[1]+fRand(-AA,AA);P_O(2)=P_I[2]+fRand(-AA,AA);
-            P_O.Print("The initial position");
-            DP_O(0)=DP_I[0]+fRand(-AA,AA);DP_O(1)=DP_I[1]+fRand(-AA,AA);DP_O(2)=DP_I[2]+fRand(0-AA,AA);
-            DP_O.Print("The initial velocity");
-            DDP_O(0)=0.0;DDP_O(1)=0.0;DDP_O(2)=-0.5;//-0.5
+//            P_O(0)=P_I[0]+fRand(-AA,AA);    P_O(1)=P_I[1]+fRand(-AA,AA);    P_O(2)=P_I[2]+fRand(-AA,AA);
+//            P_O.Print("The initial position");
+//            DP_O(0)=DP_I[0]+fRand(-AA,AA);  DP_O(1)=DP_I[1]+fRand(-AA,AA);  DP_O(2)=DP_I[2]+fRand(0-AA,AA);
+//            DP_O.Print("The initial velocity");
+//            DDP_O(0)=0.0;                   DDP_O(1)=0.0;                   DDP_O(2)=-0.5;//-0.5
+            P_O(0)=P_I[0];    P_O(1)=P_I[1];    P_O(2)=P_I[2];
+            DP_O(0)=DP_I[0];  DP_O(1)=DP_I[1];  DP_O(2)=DP_I[2];
+            DDP_O(0)=0.0;     DDP_O(1)=0.0;     DDP_O(2)=-0.5;//-0.5
+
             Object.position.x=P_O(0);
             Object.position.y=P_O(1);
             Object.position.z=P_O(2);

@@ -60,9 +60,9 @@ void bimanual_catching_module::chatterCallback_object_velocity(const geometry_ms
     {
         double vel[3];
 
-        vel[0]=msg.position.x;
-        vel[1]=msg.position.y;
-        vel[2]=msg.position.z;
+        vel[0] = msg.position.x;
+        vel[1] = msg.position.y;
+        vel[2] = msg.position.z;
 
         DRPos_object.Set(vel, 3);
     }
@@ -74,20 +74,30 @@ void bimanual_catching_module::chatterCallback_attractor_postion(const geometry_
     if (msg.position.x!=0)
     {
         double pos[3];
-        if (msg.position.x < -0.4) {
-            pos[0]=msg.position.x;
-            pos[1]=msg.position.y;
-            pos[2]=msg.position.z;
 
-            RPos_attractor_prev.Set(pos, 3);
+        if (msg.position.x > 0.5) {
+            pos[0] = msg.position.x;
+            pos[1] = msg.position.y;
+            pos[2] = msg.position.z;
 
             RPos_attractor.Set(pos, 3);
+            RPos_attractor_prev.Set(pos, 3);
         }
-        else
+        else {
             RPos_attractor = RPos_attractor_prev;
+        }
     }
 
-//    cout<<"att pos: "<<RPos_attractor(0)<<" "<<RPos_attractor(1)<<" "<<RPos_attractor(2)<<endl;
+//    if (msg.position.x!=0)
+//    {
+//        double pos[3];
+
+//        pos[0]=msg.position.x;
+//        pos[1]=msg.position.y;
+//        pos[2]=msg.position.z;
+
+//        RPos_attractor.Set(pos, 3);
+//    }
 
 }
 
@@ -98,22 +108,19 @@ void bimanual_catching_module::chatterCallback_attractor_velocity(const geometry
     {
         double vel[3];
 
-//        vel[0]=msg.position.x;
-//        vel[1]=msg.position.y;
-//        vel[2]=msg.position.z;
-
-//        if (RPos_attractor(0)>-0.3 ) {
-//            vel[0] = 0.0;   vel[1] = 0.0;   vel[2] = 0.0;
-//        }
-
-        vel[0]=msg.position.x * abs(RPos_attractor(0)/3.0);
-        vel[1]=msg.position.y * abs(RPos_attractor(0)/3.0);
-        vel[2]=msg.position.z * abs(RPos_attractor(0)/3.0);
+        if (msg.position.x > 0.5) {
+            vel[0]=msg.position.x;
+            vel[1]=msg.position.y;
+            vel[2]=msg.position.z;
+        }
+        else {
+            vel[0] = 0.0;
+            vel[1] = 0.0;
+            vel[2] = 0.0;
+        }
 
         DRPos_attractor.Set(vel, 3);
     }
-
-//    cout<<"att vel: "<<DRPos_attractor(0)<<" "<<DRPos_attractor(1)<<" "<<DRPos_attractor(2)<<endl;
 
 }
 
@@ -123,16 +130,11 @@ void bimanual_catching_module::chatterCallback_ttc(const std_msgs::String::Const
     double ttc_in;
     sscanf(msg->data.c_str(), "%lf", &ttc_in);
 
-//    if (ttc_in<0.1)    ttc = 0.1;
-//    else               ttc = ttc_in;
-
     ttc = ttc_in;
 
-//    cout<<"ttc "<<ttc<<endl;
 }
 
 
-// /////////////
 void bimanual_catching_module::sendPredictionCommand(int _command)
 {
     std_msgs::String msg;
@@ -143,9 +145,6 @@ void bimanual_catching_module::sendPredictionCommand(int _command)
     msg.data = ss.str();
     pub_command.publish(msg);
 }
-// ///////////////
-
-
 
 
 
@@ -177,18 +176,28 @@ void bimanual_catching_module::solveInverseKinematics() {
 
 
         // dealing with joint limits
-//        vector limLow, limHigh;
-        limLow.Resize(KUKA_DOF);    limHigh.Resize(KUKA_DOF);
+        limLow_left.Resize(ROBOT_DOF);    limHigh_left.Resize(ROBOT_DOF);
 
-        limLow(0)=DEG2RAD( -85.);   limHigh(0)=DEG2RAD( 85.);
-        limLow(1)=DEG2RAD( -90.);   limHigh(1)=DEG2RAD( 90.);
-        limLow(2)=DEG2RAD(-100.);   limHigh(2)=DEG2RAD(100.);
-        limLow(3)=DEG2RAD(-120.);   limHigh(3)=DEG2RAD(120.);
-        limLow(4)=DEG2RAD(-140.);   limHigh(4)=DEG2RAD(140.);
-        limLow(5)=DEG2RAD( -90.);   limHigh(5)=DEG2RAD( 90.);
-        limLow(6)=DEG2RAD(-170.);   limHigh(6)=DEG2RAD(170.);
+        limLow_left(0)=-3.4034;     limHigh_left(0)=1.6581;
+        limLow_left(1)=-0.31415;    limHigh_left(1)=2.094;
+        limLow_left(2)=-1.5708;     limHigh_left(2)=1.5708;
+        limLow_left(3)=-2.3562;     limHigh_left(3)=0.0;
+        limLow_left(4)=-1.5708;     limHigh_left(4)=1.5708;
+        limLow_left(5)=-0.524;      limHigh_left(5)=0.524;
+        limLow_left(6)=-0.785375;   limHigh_left(6)=1.395;
 
-        for(int i=0; i<KUKA_DOF; i++) {
+        limLow_right.Resize(ROBOT_DOF);    limHigh_right.Resize(ROBOT_DOF);
+
+        limLow_right(0)=-3.4034;     limHigh_right(0)=1.6581;
+        limLow_right(1)=-2.094;      limHigh_right(1)=0.31415;
+        limLow_right(2)=-1.5708;     limHigh_right(2)=1.5708;
+        limLow_right(3)=-2.3562;     limHigh_right(3)=0.0;
+        limLow_right(4)=-1.5708;     limHigh_right(4)=1.5708;
+        limLow_right(5)=-0.524;      limHigh_right(5)=0.524;
+        limLow_right(6)=-1.395;      limHigh_right(6)=0.785375;
+
+
+        for(int i=0; i<ROBOT_DOF; i++) {
             // default: max
             mJointVelLimitsDn_left(i) = -mSKinematicChain_left->getMaxVel(i)*lVelMux;
             mJointVelLimitsUp_left(i) =  mSKinematicChain_left->getMaxVel(i)*lVelMux;
@@ -197,20 +206,19 @@ void bimanual_catching_module::solveInverseKinematics() {
             mJointVelLimitsUp_right(i) =  mSKinematicChain_right->getMaxVel(i)*lVelMux;
 
             // check for limits
-            double deltaLow_left = TJointPos_left(i) - limLow(i);       double deltaHigh_left = limHigh(i) - TJointPos_left(i);
-            double deltaLow_right = TJointPos_right(i) - limLow(i);     double deltaHigh_right = limHigh(i) - TJointPos_right(i);
+//            double deltaLow_left = TJointPos_left(i) - limLow_left(i);       double deltaHigh_left = limHigh_left(i) - TJointPos_left(i);
+//            double deltaLow_right = TJointPos_right(i) - limLow_right(i);     double deltaHigh_right = limHigh_right(i) - TJointPos_right(i);
 
-            if (deltaLow_left < 0.0)                    mJointVelLimitsDn_left *= 0.0;
-            else if (deltaLow_left < DEG2RAD(5.0))      mJointVelLimitsDn_left *= deltaLow_left /DEG2RAD(5.0);
-            if (deltaHigh_left < 0.0)                   mJointVelLimitsUp_left *= 0.0;
-            else if (deltaHigh_left < DEG2RAD(5.0))     mJointVelLimitsUp_left *= deltaHigh_left /DEG2RAD(5.0);
+//            if (deltaLow_left < 0.0)                    mJointVelLimitsDn_left *= 0.0;
+//            else if (deltaLow_left < DEG2RAD(5.0))      mJointVelLimitsDn_left *= deltaLow_left /DEG2RAD(5.0);
+//            if (deltaHigh_left < 0.0)                   mJointVelLimitsUp_left *= 0.0;
+//            else if (deltaHigh_left < DEG2RAD(5.0))     mJointVelLimitsUp_left *= deltaHigh_left /DEG2RAD(5.0);
 
-            if (deltaLow_right < 0.0)                   mJointVelLimitsDn_right *= 0.0;
-            else if (deltaLow_right < DEG2RAD(5.0))     mJointVelLimitsDn_right *= deltaLow_right /DEG2RAD(5.0);
-            if (deltaHigh_right < 0.0)                  mJointVelLimitsUp_right *= 0.0;
-            else if (deltaHigh_right < DEG2RAD(5.0))    mJointVelLimitsUp_right *= deltaHigh_right /DEG2RAD(5.0);
+//            if (deltaLow_right < 0.0)                   mJointVelLimitsDn_right *= 0.0;
+//            else if (deltaLow_right < DEG2RAD(5.0))     mJointVelLimitsDn_right *= deltaLow_right /DEG2RAD(5.0);
+//            if (deltaHigh_right < 0.0)                  mJointVelLimitsUp_right *= 0.0;
+//            else if (deltaHigh_right < DEG2RAD(5.0))    mJointVelLimitsUp_right *= deltaHigh_right /DEG2RAD(5.0);
         }
-
 
         mIKSolver_left.SetLimits(mJointVelLimitsDn_left, mJointVelLimitsUp_left);
         mIKSolver_right.SetLimits(mJointVelLimitsDn_right, mJointVelLimitsUp_right);
@@ -276,25 +284,22 @@ void bimanual_catching_module::solveInverseKinematics() {
 }
 
 
+
 void bimanual_catching_module::sendPositionToRobot(ENUM_Robot Robot, Vector Position) {
 
-    kuka_fri_bridge::JointStateImpedance msg;
+    std_msgs::Float64MultiArray msg;
 
-    msg.position.resize(KUKA_DOF);
-    msg.stiffness.resize(KUKA_DOF);
+    msg.data.resize(ROBOT_DOF);
 
-    for (int i=0; i<KUKA_DOF;i=i+1)
-    {
-        msg.position[i]  = Position(i);
-        msg.stiffness[i] = 2000;
-    }
+    for (int i=0; i<ROBOT_DOF;i=i+1)
+        msg.data[i]  = Position(i);
 
     switch(Robot){
     case Left :
-        pub_command_pos_left.publish(msg);
+        pub_command_pos_left_coman.publish(msg);
         break;
     case Right :
-        pub_command_pos_right.publish(msg);
+        pub_command_pos_right_coman.publish(msg);
         break;
     }
 }
@@ -303,7 +308,7 @@ void bimanual_catching_module::sendPositionToRobot(ENUM_Robot Robot, Vector Posi
 void bimanual_catching_module::parameterInitialization() {
     // initilize parameters
 
-    KUKA_DOF = 7;
+    ROBOT_DOF = 7;
     dt = 0.002;
     IK_CONSTRAINTS = 9;
 
@@ -325,8 +330,8 @@ void bimanual_catching_module::parameterInitialization() {
     DRPos_attractor.Zero();
     DDRPos_attractor.Zero();
 
-    RPos_attractor(0)=-0.3;         RPos_attractor(1)=-0.5;         RPos_attractor(2)=1.0;
-    RPos_attractor_prev(0)=-0.3;    RPos_attractor_prev(1)=-0.5;    RPos_attractor_prev(2)=1.0;
+    RPos_attractor(0)=0.3;         RPos_attractor(1)=0.0;         RPos_attractor(2)=0.0;
+    RPos_attractor_prev(0)=0.3;    RPos_attractor_prev(1)=0.0;    RPos_attractor_prev(2)=0.0;
 
     PosDesired_End_left.Resize(3);
     DPosDesired_End_left.Resize(3);
@@ -342,12 +347,12 @@ void bimanual_catching_module::parameterInitialization() {
     lDirX_left.Resize(3);
     lDirY_left.Resize(3);
     lDirZ_left.Resize(3);
-    lJoints_left.Resize(KUKA_DOF);
+    lJoints_left.Resize(ROBOT_DOF);
 
     lDirX_right.Resize(3);
     lDirY_right.Resize(3);
     lDirZ_right.Resize(3);
-    lJoints_right.Resize(KUKA_DOF);
+    lJoints_right.Resize(ROBOT_DOF);
 
     lTargetDirY_left.Resize(3);
     lTargetDirZ_left.Resize(3);
@@ -355,17 +360,17 @@ void bimanual_catching_module::parameterInitialization() {
     lTargetDirY_right.Resize(3);
     lTargetDirZ_right.Resize(3);
 
-    mJointDesVel_left.Resize(KUKA_DOF);
-    mJointDesVel_right.Resize(KUKA_DOF);
+    mJointDesVel_left.Resize(ROBOT_DOF);
+    mJointDesVel_right.Resize(ROBOT_DOF);
+
+    d_L_d.Resize(3);
+    d_R_d.Resize(3);
 
 
+    CDJointPlanner_left = new CDDynamics( ROBOT_DOF, dt, 0.5 );
+    CDJointPlanner_right = new CDDynamics( ROBOT_DOF, dt, 0.5 );
 
-    //
-
-    CDJointPlanner_left = new CDDynamics( KUKA_DOF, dt, 0.5 );
-    CDJointPlanner_right = new CDDynamics( KUKA_DOF, dt, 0.5 );
-
-    Vector lAccelLimits(KUKA_DOF);
+    Vector lAccelLimits(ROBOT_DOF);
     lAccelLimits.One();
     lAccelLimits *= 35.0;
 
@@ -374,27 +379,48 @@ void bimanual_catching_module::parameterInitialization() {
 
     force_dynamical_system = new bimanual_ds();
 
-//    force_dynamical_system->initialize(dt, 3.0, 3.0, 2.0, 2.0, 25.0, 35.0);
-    force_dynamical_system->initialize(dt, 10.0, 3.0, 2.0, 2.0, 40.0, 400.0);
+    // kuka
+//    force_dynamical_system->initialize(dt, 10.0, 3.0, 2.0, 2.0, 40.0, 400.0);
+//    force_dynamical_system->initialize(dt, 10.0, 3.0, 5.0, 5.0, 40.0, 400.0);
+
+    // coman
+//    force_dynamical_system->initialize(dt, 20.0, 3.0, 10.0, 10.0, 40.0, 400.0);     // r=0.2
+    force_dynamical_system->initialize(dt, 50.0, 10.0, 10.0, 10.0, 40.0, 400.0);     // r=0.2
+
+    // desired hand-object distance
+    // ball radius 0.2m
+    d_L_d(0) = -0.2;     d_L_d(1) = 0.2;     d_L_d(2) = -0.1;
+    d_R_d(0) = -0.2;     d_R_d(1) = -0.2;     d_R_d(2) = -0.1;
 
 
     mCommand = COMMAND_NONE;
     mPlanner = PLANNER_NONE;
-
 
 }
 
 
 void bimanual_catching_module::initKinematics() {
 
-    lJointWeight.Resize(KUKA_DOF);
-    lJointWeight(0) = 0.15;
-    lJointWeight(1) = 0.35;
-    lJointWeight(2) = 0.35;
-    lJointWeight(3) = 1.0;
-    lJointWeight(4) = 1.0;
-    lJointWeight(5) = 1.0;
-    lJointWeight(6) = 1.0;
+    lJointWeight.Resize(ROBOT_DOF);
+
+    // kuka
+//    lJointWeight(0) = 0.15;
+//    lJointWeight(1) = 0.35;
+//    lJointWeight(2) = 0.35;
+//    lJointWeight(3) = 1.0;
+//    lJointWeight(4) = 1.0;
+//    lJointWeight(5) = 1.0;
+//    lJointWeight(6) = 1.0;
+
+    // Coman
+    lJointWeight(0) = 0.5678;
+    lJointWeight(1) = 0.7768;
+    lJointWeight(2) = 1.0462;
+    lJointWeight(3) = 0.6331;
+    lJointWeight(4) = 0.9335;
+    lJointWeight(5) = 0.2607;
+    lJointWeight(6) = 0.0540;
+
 
     mEndEffectorId = mRobot->GetLinksCount() - 1;
     mKinematicChain.SetRobot(mRobot);
@@ -410,45 +436,60 @@ void bimanual_catching_module::initKinematics() {
 
 void bimanual_catching_module::initKinematics_left() {
 
-    TJointPos_left.Resize(KUKA_DOF);
-    RJointPos_left.Resize(KUKA_DOF);
-    RJointPos_left_Error.Resize(KUKA_DOF);
+    TJointPos_left.Resize(ROBOT_DOF);
+    RJointPos_left.Resize(ROBOT_DOF);
+    RJointPos_left_Error.Resize(ROBOT_DOF);
 
-    JointTargetPos_left.Resize(KUKA_DOF);
+    JointTargetPos_left.Resize(ROBOT_DOF);
     JointTargetPos_left.Zero();
-    JointFinalPos_left.Resize(KUKA_DOF);
+    JointFinalPos_left.Resize(ROBOT_DOF);
 
-    JointDesVel_left.Resize(KUKA_DOF);
-    mJointVelLimitsUp_left.Resize(KUKA_DOF);
-    mJointVelLimitsDn_left.Resize(KUKA_DOF);
+    JointDesVel_left.Resize(ROBOT_DOF);
+    mJointVelLimitsUp_left.Resize(ROBOT_DOF);
+    mJointVelLimitsDn_left.Resize(ROBOT_DOF);
 
     RPos_End_left.Resize(3);
     DRPos_End_left.Resize(3);
     DDRPos_End_left.Resize(3);
 
-    mSKinematicChain_left = new sKinematics(KUKA_DOF, dt);
+    mSKinematicChain_left = new sKinematics(ROBOT_DOF, dt);
 
-    mSKinematicChain_left->setDH(0,  0.0,  0.3105, M_PI_2, 0.0, 1,  DEG2RAD( -85.), DEG2RAD( 85.), DEG2RAD( 98.0)*0.95);
-    mSKinematicChain_left->setDH(1,  0.0,  0.00,  -M_PI_2, 0.0, 1,  DEG2RAD( -90.), DEG2RAD( 90.), DEG2RAD( 98.0)*0.90);
-    mSKinematicChain_left->setDH(2,  0.0,  0.40,  -M_PI_2, 0.0, 1,  DEG2RAD(-100.), DEG2RAD(100.), DEG2RAD(100.0)*0.95);
-    mSKinematicChain_left->setDH(3,  0.0,  0.00,   M_PI_2, 0.0, 1,  DEG2RAD(-120.), DEG2RAD(120.), DEG2RAD(130.0)*0.95);
-    mSKinematicChain_left->setDH(4,  0.0,  0.39,   M_PI_2, 0.0, 1,  DEG2RAD(-140.), DEG2RAD(140.), DEG2RAD(140.0)*0.95);
-    mSKinematicChain_left->setDH(5,  0.0,  0.00,  -M_PI_2, 0.0, 1,  DEG2RAD( -90.), DEG2RAD( 90.), DEG2RAD(180.0)*0.90); // reduced joint angle to save the fingers
-    mSKinematicChain_left->setDH(6,  0.0,  0.07,      0.0, 0.0, 1,  DEG2RAD(-170.), DEG2RAD(170.), DEG2RAD(184.0)*0.95); // for sim lab
+    // kuka
+//    mSKinematicChain_left->setDH(0,  0.0,  0.3105, M_PI_2, 0.0, 1,  DEG2RAD( -85.), DEG2RAD( 85.), DEG2RAD( 98.0)*0.95);
+//    mSKinematicChain_left->setDH(1,  0.0,  0.00,  -M_PI_2, 0.0, 1,  DEG2RAD( -90.), DEG2RAD( 90.), DEG2RAD( 98.0)*0.90);
+//    mSKinematicChain_left->setDH(2,  0.0,  0.40,  -M_PI_2, 0.0, 1,  DEG2RAD(-100.), DEG2RAD(100.), DEG2RAD(100.0)*0.95);
+//    mSKinematicChain_left->setDH(3,  0.0,  0.00,   M_PI_2, 0.0, 1,  DEG2RAD(-120.), DEG2RAD(120.), DEG2RAD(130.0)*0.95);
+//    mSKinematicChain_left->setDH(4,  0.0,  0.39,   M_PI_2, 0.0, 1,  DEG2RAD(-140.), DEG2RAD(140.), DEG2RAD(140.0)*0.95);
+//    mSKinematicChain_left->setDH(5,  0.0,  0.00,  -M_PI_2, 0.0, 1,  DEG2RAD( -90.), DEG2RAD( 90.), DEG2RAD(180.0)*0.90); // reduced joint angle to save the fingers
+//    mSKinematicChain_left->setDH(6,  0.0,  0.07,      0.0, 0.0, 1,  DEG2RAD(-170.), DEG2RAD(170.), DEG2RAD(184.0)*0.95); // for sim lab
+
+    // Coman                      i     a        d               alpha      theta0      1   min         max         maxvel
+    mSKinematicChain_left->setDH(0,    0.0,     0.0733,        -M_PI_2,   -M_PI_2,     1,  -3.4034,    1.6581,     4.0);   // LShSag
+    mSKinematicChain_left->setDH(1,    0.0,     0.0,           -M_PI_2,   -M_PI_2,     1,  -0.31415,   2.094,      4.0);   // LShLat
+    mSKinematicChain_left->setDH(2,    0.015,  -0.0448-0.1352, -M_PI_2,   -M_PI_2,     1,  -1.5708,    1.5708,     4.0);   // LShYaw
+    mSKinematicChain_left->setDH(3,   -0.015,   0.0,            M_PI_2,    0.0,        1,  -2.3562,    0.0,        4.0);   // LElbj
+    mSKinematicChain_left->setDH(4,    0.0,    -0.1078-0.0869, -M_PI_2,    0.0,        1,  -1.5708,    1.5708,     4.0);   // LForearmPlate
+    mSKinematicChain_left->setDH(5,    0.0,     0.0,           -M_PI_2,   -M_PI_2,     1,  -0.524,     0.524,      4.0);   // LWrj1
+    mSKinematicChain_left->setDH(6,   -0.05,    0.0,            0.0,       0.0,        1,  -0.785375,  1.395,      4.0);   // LWrj2
 
 
     double T0[4][4];
-    for(int i=0; i<4; i++)
-        for(int j=0; j<4; j++)
-            T0[i][j] = 0.0;
+//    for(int i=0; i<4; i++)
+//        for(int j=0; j<4; j++)
+//            T0[i][j] = 0.0;
 
-    T0[0][0] = 1;
-    T0[1][1] = 1;
-    T0[2][2] = 1;
-    T0[3][3] = 1;
-    T0[0][3] = 0.0; //0.24
-    T0[1][3] = -1.0; //-1.15;
-    T0[2][3] = 0.0; //-0.05;
+//    T0[0][0] = 1;
+//    T0[1][1] = 1;
+//    T0[2][2] = 1;
+//    T0[3][3] = 1;
+//    T0[0][3] = 0.0; //0.24
+//    T0[1][3] = -1.0; //-1.15;
+//    T0[2][3] = 0.0; //-0.05;
+
+    T0[0][0] = 1;   T0[0][1] = 0;   T0[0][2] = 0;   T0[0][3] = 0.04;
+    T0[1][0] = 0;   T0[1][1] = 0;   T0[1][2] = 1;   T0[1][3] = 0.082; //0.2194;
+    T0[2][0] = 0;   T0[2][1] = -1;  T0[2][2] = 0;   T0[2][3] = 0.324;
+    T0[3][0] = 0;   T0[3][1] = 0;   T0[3][2] = 0;   T0[3][3] = 1;
 
     mSKinematicChain_left->setT0(T0);
 
@@ -468,23 +509,23 @@ void bimanual_catching_module::initKinematics_left() {
     mSKinematicChain_left->readyForKinematics();
     mSKinematicChain_left->setTF(TF);
 
-    Vector lAccelLimits(KUKA_DOF);
+    Vector lAccelLimits(ROBOT_DOF);
     lAccelLimits.One();
     lAccelLimits *= 35.0;
 
-    Vector lMaxVel(KUKA_DOF);
+    Vector lMaxVel(ROBOT_DOF);
     mSKinematicChain_left->getMaxVel(lMaxVel.Array());
 
     CDJointPlanner_left->SetVelocityLimits(lMaxVel);
 
     // variable for ik
-    mJacobian3_left.Resize(3,KUKA_DOF);
-    lJacobianDirY_left.Resize(3,KUKA_DOF);
-    lJacobianDirZ_left.Resize(3,KUKA_DOF);
-    mJacobian9_left.Resize(9,KUKA_DOF);
+    mJacobian3_left.Resize(3,ROBOT_DOF);
+    lJacobianDirY_left.Resize(3,ROBOT_DOF);
+    lJacobianDirZ_left.Resize(3,ROBOT_DOF);
+    mJacobian9_left.Resize(9,ROBOT_DOF);
 
     //Inverse Kinematic
-    mIKSolver_left.SetSizes(KUKA_DOF);  // Dof counts
+    mIKSolver_left.SetSizes(ROBOT_DOF);  // Dof counts
     mIKSolver_left.AddSolverItem(IK_CONSTRAINTS);
     mIKSolver_left.SetVerbose(false);                // No comments
     mIKSolver_left.SetThresholds(0.00001,0.000001);    // Singularities thresholds
@@ -499,44 +540,58 @@ void bimanual_catching_module::initKinematics_left() {
 
 void bimanual_catching_module::initKinematics_right() {
 
-    TJointPos_right.Resize(KUKA_DOF);
-    RJointPos_right.Resize(KUKA_DOF);
-    RJointPos_right_Error.Resize(KUKA_DOF);
+    TJointPos_right.Resize(ROBOT_DOF);
+    RJointPos_right.Resize(ROBOT_DOF);
+    RJointPos_right_Error.Resize(ROBOT_DOF);
 
-    JointTargetPos_right.Resize(KUKA_DOF);
+    JointTargetPos_right.Resize(ROBOT_DOF);
     JointTargetPos_right.Zero();
-    JointFinalPos_right.Resize(KUKA_DOF);
+    JointFinalPos_right.Resize(ROBOT_DOF);
 
-    JointDesVel_right.Resize(KUKA_DOF);
-    mJointVelLimitsUp_right.Resize(KUKA_DOF);
-    mJointVelLimitsDn_right.Resize(KUKA_DOF);
+    JointDesVel_right.Resize(ROBOT_DOF);
+    mJointVelLimitsUp_right.Resize(ROBOT_DOF);
+    mJointVelLimitsDn_right.Resize(ROBOT_DOF);
 
     RPos_End_right.Resize(3);
     DRPos_End_right.Resize(3);
     DDRPos_End_right.Resize(3);
 
-    mSKinematicChain_right = new sKinematics(KUKA_DOF, dt);
+    mSKinematicChain_right = new sKinematics(ROBOT_DOF, dt);
 
-    mSKinematicChain_right->setDH(0,  0.0,  0.3105, M_PI_2, 0.0, 1,  DEG2RAD( -85.), DEG2RAD( 85.), DEG2RAD(98.0)*0.95);
-    mSKinematicChain_right->setDH(1,  0.0,  0.00,-M_PI_2, 0.0, 1,  DEG2RAD( -90.), DEG2RAD( 90.), DEG2RAD(98.0)*0.90);
-    mSKinematicChain_right->setDH(2,  0.0,  0.40,-M_PI_2, 0.0, 1,  DEG2RAD(-100.), DEG2RAD(100.), DEG2RAD(100.0)*0.95);
-    mSKinematicChain_right->setDH(3,  0.0,  0.00, M_PI_2, 0.0, 1,  DEG2RAD(-120.), DEG2RAD(120.), DEG2RAD(130.0)*0.95);
-    mSKinematicChain_right->setDH(4,  0.0,  0.39, M_PI_2, 0.0, 1,  DEG2RAD(-140.), DEG2RAD(140.), DEG2RAD(140.0)*0.95);
-    mSKinematicChain_right->setDH(5,  0.0,  0.00,-M_PI_2, 0.0, 1,  DEG2RAD( -90.), DEG2RAD( 90.), DEG2RAD(180.0)*0.90); // reduced joint angle to save the fingers
-    mSKinematicChain_right->setDH(6,  0.0,  0.07,    0.0, 0.0, 1,  DEG2RAD(-170.), DEG2RAD(170.), DEG2RAD(184.0)*0.95); // for sim lab
+    // KUKA
+//    mSKinematicChain_right->setDH(0,  0.0,  0.3105, M_PI_2, 0.0, 1,  DEG2RAD( -85.), DEG2RAD( 85.), DEG2RAD(98.0)*0.95);
+//    mSKinematicChain_right->setDH(1,  0.0,  0.00,-M_PI_2, 0.0, 1,  DEG2RAD( -90.), DEG2RAD( 90.), DEG2RAD(98.0)*0.90);
+//    mSKinematicChain_right->setDH(2,  0.0,  0.40,-M_PI_2, 0.0, 1,  DEG2RAD(-100.), DEG2RAD(100.), DEG2RAD(100.0)*0.95);
+//    mSKinematicChain_right->setDH(3,  0.0,  0.00, M_PI_2, 0.0, 1,  DEG2RAD(-120.), DEG2RAD(120.), DEG2RAD(130.0)*0.95);
+//    mSKinematicChain_right->setDH(4,  0.0,  0.39, M_PI_2, 0.0, 1,  DEG2RAD(-140.), DEG2RAD(140.), DEG2RAD(140.0)*0.95);
+//    mSKinematicChain_right->setDH(5,  0.0,  0.00,-M_PI_2, 0.0, 1,  DEG2RAD( -90.), DEG2RAD( 90.), DEG2RAD(180.0)*0.90);
+//    mSKinematicChain_right->setDH(6,  0.0,  0.07,    0.0, 0.0, 1,  DEG2RAD(-170.), DEG2RAD(170.), DEG2RAD(184.0)*0.95);
+
+    // Seungsu's                    i      a        d                 alpha       theta0              1   min     max     maxvel
+//    mSKinematicChain_right->setDH(0,     0.0,     0.0000,           -M_PI_2,    0.0,                1,  -3.4034,    1.6581,     4.0);
+//    mSKinematicChain_right->setDH(1,     0.0,     0.0000,            M_PI_2,    DEG2RAD(20.-90.),   1,  -2.094,     0.31415,    4.0);
+//    mSKinematicChain_right->setDH(2,    -0.015,   0.0475+0.1554,    -M_PI_2,    0.0,                1,  -1.5708,    1.5708,     4.0);
+//    mSKinematicChain_right->setDH(3,     0.0,    -0.0825-0.0710,     M_PI_2,    M_PI_2,             1,  -2.3562,    0.0,        4.0);
+//    mSKinematicChain_right->setDH(4,     0.0,     0.0000,           -M_PI_2,    M_PI_2,             1,  -1.5708,    1.5708,     4.0);
+//    mSKinematicChain_right->setDH(5,     0.0,    -0.1356-0.0425,    -M_PI_2,   -M_PI_2,             1,  -0.524,     0.524,      4.0);
+//    mSKinematicChain_right->setDH(6,     0.0,     0.0000,            M_PI_2,    0.0,                1,  -1.395,     0.785375,   4.0);
+
+    // Coman                      i     a        d               alpha      theta0      1   min         max         maxvel
+    mSKinematicChain_right->setDH(0,    0.0,    -0.0733,        -M_PI_2,   -M_PI_2,     1,  -3.4034,    1.6581,     4.0);   // RShSag
+    mSKinematicChain_right->setDH(1,    0.0,     0.0,           -M_PI_2,   -M_PI_2,     1,  -2.094,     0.31415,    4.0);   // RShLat
+    mSKinematicChain_right->setDH(2,    0.015,  -0.0448-0.1352, -M_PI_2,   -M_PI_2,     1,  -1.5708,    1.5708,     4.0);   // RShYaw
+    mSKinematicChain_right->setDH(3,   -0.015,   0.0,            M_PI_2,    0.0,        1,  -2.3562,    0.0,        4.0);   // RElbj
+    mSKinematicChain_right->setDH(4,    0.0,    -0.1078-0.0869, -M_PI_2,    0.0,        1,  -1.5708,    1.5708,     4.0);   // RForearmPlate
+    mSKinematicChain_right->setDH(5,    0.0,     0.0,           -M_PI_2,   -M_PI_2,     1,  -0.524,     0.524,      4.0);   // RWrj1
+    mSKinematicChain_right->setDH(6,   -0.05,    0.0,            0.0,       0.0,        1,  -1.395,     0.785375,   4.0);   // RWrj2
+
 
     double T0[4][4];
-    for(int i=0; i<4; i++)
-        for(int j=0; j<4; j++)
-            T0[i][j] = 0.0;
 
-    T0[0][0] = 1;
-    T0[1][1] = 1;
-    T0[2][2] = 1;
-    T0[3][3] = 1;
-//    T0[0][3] = 0.24;
-//    T0[1][3] = -1.4885;
-//    T0[2][3] = -0.05;
+    T0[0][0] = 1;   T0[0][1] = 0;   T0[0][2] = 0;   T0[0][3] = 0.04;
+    T0[1][0] = 0;   T0[1][1] = 0;   T0[1][2] = 1;   T0[1][3] = -0.082; // -0.2194;
+    T0[2][0] = 0;   T0[2][1] = -1;  T0[2][2] = 0;   T0[2][3] = 0.324;
+    T0[3][0] = 0;   T0[3][1] = 0;   T0[3][2] = 0;   T0[3][3] = 1;
 
     mSKinematicChain_right->setT0(T0);
 
@@ -556,23 +611,23 @@ void bimanual_catching_module::initKinematics_right() {
     mSKinematicChain_right->readyForKinematics();
     mSKinematicChain_right->setTF(TF);
 
-    Vector lAccelLimits(KUKA_DOF);
+    Vector lAccelLimits(ROBOT_DOF);
     lAccelLimits.One();
     lAccelLimits *= 35.0;
 
-    Vector lMaxVel(KUKA_DOF);
+    Vector lMaxVel(ROBOT_DOF);
     mSKinematicChain_right->getMaxVel(lMaxVel.Array());
 
     CDJointPlanner_right->SetVelocityLimits(lMaxVel);
 
     // variable for ik
-    mJacobian3_right.Resize(3,KUKA_DOF);
-    lJacobianDirY_right.Resize(3,KUKA_DOF);
-    lJacobianDirZ_right.Resize(3,KUKA_DOF);
-    mJacobian9_right.Resize(9,KUKA_DOF);
+    mJacobian3_right.Resize(3,ROBOT_DOF);
+    lJacobianDirY_right.Resize(3,ROBOT_DOF);
+    lJacobianDirZ_right.Resize(3,ROBOT_DOF);
+    mJacobian9_right.Resize(9,ROBOT_DOF);
 
     //Inverse Kinematic
-    mIKSolver_right.SetSizes(KUKA_DOF);  // Dof counts
+    mIKSolver_right.SetSizes(ROBOT_DOF);  // Dof counts
     mIKSolver_right.AddSolverItem(IK_CONSTRAINTS);
     mIKSolver_right.SetVerbose(false);                // No comments
     mIKSolver_right.SetThresholds(0.00001,0.000001);    // Singularities thresholds
@@ -591,8 +646,10 @@ void bimanual_catching_module::topicInitialization() {
     mRobot->SetControlMode(Robot::CTRLMODE_POSITION);
     ros::NodeHandle *n = mRobot->InitializeROS();
 
-    sub_robot_left_jointPos = n->subscribe("/l_arm_pos_controller/joint_states", 3, & bimanual_catching_module::chatterCallback_robot_left_position, this);
-    sub_robot_right_jointPos = n->subscribe("/r_arm_pos_controller/joint_states", 3, & bimanual_catching_module::chatterCallback_robot_right_position, this);
+//    sub_robot_left_jointPos = n->subscribe("/l_arm_pos_controller/joint_states", 3, & bimanual_catching_module::chatterCallback_robot_left_position, this);
+//    sub_robot_right_jointPos = n->subscribe("/r_arm_pos_controller/joint_states", 3, & bimanual_catching_module::chatterCallback_robot_right_position, this);
+    sub_robot_left_jointPos_coman = n->subscribe("/Coman/Left/in", 3, & bimanual_catching_module::chatterCallback_robot_left_position, this);
+    sub_robot_right_jointPos_coman = n->subscribe("/Coman/Right/in", 3, & bimanual_catching_module::chatterCallback_robot_right_position, this);
 
     sub_object_pos = n->subscribe("/catch/objpos", 3, & bimanual_catching_module::chatterCallback_object_postion, this);
     sub_object_vel = n->subscribe("/catch/objvel", 3, & bimanual_catching_module::chatterCallback_object_velocity, this);
@@ -605,8 +662,11 @@ void bimanual_catching_module::topicInitialization() {
 
     pub_command = n->advertise<std_msgs::String>("/catch/command", 3);
 
-    pub_command_pos_left = n->advertise<kuka_fri_bridge::JointStateImpedance>("/l_arm_controller/joint_imp_cmd", 3);
-    pub_command_pos_right = n->advertise<kuka_fri_bridge::JointStateImpedance>("/r_arm_controller/joint_imp_cmd", 3);
+//    pub_command_pos_left = n->advertise<kuka_fri_bridge::JointStateImpedance>("/l_arm_controller/joint_imp_cmd", 3);
+//    pub_command_pos_right = n->advertise<kuka_fri_bridge::JointStateImpedance>("/r_arm_controller/joint_imp_cmd", 3);
+    pub_command_pos_left_coman = n->advertise<std_msgs::Float64MultiArray>("/Coman/Left/in", 3);
+    pub_command_pos_right_coman = n->advertise<std_msgs::Float64MultiArray>("/Coman/Right/in", 3);
+
 
     pub_pos_END_left = n->advertise<geometry_msgs::Pose>("/l_arm_END_pos", 3);
     pub_pos_END_right = n->advertise<geometry_msgs::Pose>("/r_arm_END_pos", 3);
@@ -618,7 +678,6 @@ void bimanual_catching_module::topicInitialization() {
 
     sendPredictionCommand(Com_NONE);
 }
-
 
 
 
@@ -697,27 +756,14 @@ RobotInterface::Status bimanual_catching_module::RobotUpdate(){
         cout<<"left end pos :  "<<RPos_End_left(0)<<" "<<RPos_End_left(1)<<" "<<RPos_End_left(2)<<endl;
         cout<<"right end pos : "<<RPos_End_right(0)<<" "<<RPos_End_right(1)<<" "<<RPos_End_right(2)<<endl;
 
-        // send prediction command
-        // send prediction state
 
-        kevin_objpose.close();
-//        kevin_objvel.close();
-//        kevin_attpose.close();
-//        kevin_VOpose.close();
+        data_save.close();
 
         char OutTEXTfile[256];
 
-        sprintf(OutTEXTfile, "kevin_data_%d.txt", cnt_saving);
-        kevin_objpose.open(OutTEXTfile);
+        sprintf(OutTEXTfile, "data_%d.txt", cnt_saving);
+        data_save.open(OutTEXTfile);
 
-//        sprintf(OutTEXTfile, "kevin_objvel%d.txt", cnt_saving);
-//        kevin_objvel.open(OutTEXTfile);
-
-//        sprintf(OutTEXTfile, "kevin_attpose%d.txt", cnt_saving);
-//        kevin_attpose.open(OutTEXTfile);
-
-//        sprintf(OutTEXTfile, "kevin_VOpose%d.txt", cnt_saving);
-//        kevin_VOpose.open(OutTEXTfile);
 
         mPlanner = PLANNER_NONE;
         mCommand=COMMAND_NONE;
@@ -744,6 +790,7 @@ RobotInterface::Status bimanual_catching_module::RobotUpdate(){
         CDJointPlanner_left->SetTarget(JointFinalPos_left);
         CDJointPlanner_right->SetTarget(JointFinalPos_right);
 
+
         mPlanner = PLANNER_JOINT;
         mCommand = COMMAND_NONE;
 
@@ -756,10 +803,12 @@ RobotInterface::Status bimanual_catching_module::RobotUpdate(){
         force_dynamical_system->Set_object_state(RPos_attractor, DRPos_attractor, DDRPos_attractor);
 //        force_dynamical_system->Set_object_state(RPos_object, DRPos_object, DDRPos_object);
 
+        cout<<"obj pos sent: "<<RPos_object(0)<<"  "<<RPos_object(1)<<"  "<<RPos_object(2)<<endl;
+
         force_dynamical_system->Set_Left_robot_state(RPos_End_left, DRPos_End_left, DDRPos_End_left);
         force_dynamical_system->Set_Right_robot_state(RPos_End_right, DRPos_End_right, DDRPos_End_right);
 
-        force_dynamical_system->initialize_Virrtual_object();
+        force_dynamical_system->initialize_Virrtual_object(d_L_d, d_R_d);
 
         cout<<"Virtual object initialized."<<endl;
 
@@ -804,7 +853,7 @@ RobotInterface::Status bimanual_catching_module::RobotUpdate(){
         force_dynamical_system->Get_Right_robot_state(PosDesired_End_right, DPosDesired_End_right, DDPosDesired_End_right);
 
 
-        // --
+        //
         Position_desired_end_left.position.x = PosDesired_End_left(0);
         Position_desired_end_left.position.y = PosDesired_End_left(1);
         Position_desired_end_left.position.z = PosDesired_End_left(2);
@@ -827,9 +876,7 @@ RobotInterface::Status bimanual_catching_module::RobotUpdate(){
 
         solveInverseKinematics();
 
-        kevin_objpose<<RPos_object(0)<<" "<<RPos_object(1)<<" "<<RPos_object(2)<<" "<<Position_VO(0)<<" "<<Position_VO(1)<<" "<<Position_VO(2)<<" "<<RPos_End_left(0)<<" "<<RPos_End_left(1)<<" "<<RPos_End_left(2)<<" "<<RPos_End_right(0)<<" "<<RPos_End_right(1)<<" "<<RPos_End_right(2)<<" "<<ttc<<endl;
-
-
+        data_save <<RPos_object(0)<<" "<<RPos_object(1)<<" "<<RPos_object(2)<<" "<<Position_VO(0)<<" "<<Position_VO(1)<<" "<<Position_VO(2)<<" "<<RPos_End_left(0)<<" "<<RPos_End_left(1)<<" "<<RPos_End_left(2)<<" "<<RPos_End_right(0)<<" "<<RPos_End_right(1)<<" "<<RPos_End_right(2)<<" "<<ttc<<endl;
 
         break;
 
@@ -874,14 +921,13 @@ RobotInterface::Status bimanual_catching_module::RobotUpdateCore(){
     pub_pos_END_left.publish(Pos_Left_End);
     pub_pos_END_right.publish(Pos_Right_End);
 
-
     return STATUS_OK;
 }
 
 
 int bimanual_catching_module::RespondToConsoleCommand(const string cmd, const vector<string> &args){
 
-    if (cmd=="init")            mCommand = COMMAND_INITIAL;
+    if      (cmd=="init")       mCommand = COMMAND_INITIAL;
     else if (cmd=="ready")      mCommand = COMMAND_READY;
     else if (cmd=="catch")      mCommand = COMMAND_CATCH;
 
