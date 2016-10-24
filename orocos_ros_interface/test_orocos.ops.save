@@ -1,0 +1,121 @@
+import("rtt_gazebo_embedded")
+import("eigen_typekit")
+import("kdl_typekit")
+import("rst-rt_typekit")
+import("rtt_rsbcomm")
+
+import("rtt-gazebo-robot-sim")
+import("rtt-core-extensions")
+
+//### instantiate components
+
+
+//## gazebo
+loadComponent("gazebo","RTTGazeboEmbedded")
+setActivity("gazebo",0,10,ORO_SCHED_OTHER)
+gazebo.argv = strings("--verbose")
+
+gazebo.add_plugin("libRTTGazeboClockPlugin.so")
+
+
+//## robot sim
+loadComponent("coman_gazebo","cogimon::robotSim")
+setActivity("coman_gazebo",0,11,ORO_SCHED_OTHER)
+
+
+//## JointPositionCtrl View
+loadComponent("coman_left_arm_JointPositionCtrl","cogimon::RTTKinematicChainJa")
+setActivity("coman_left_arm_JointPositionCtrl",0.01,12,ORO_SCHED_OTHER)
+
+
+//### load simulation related parts (i.e. models)
+
+
+//# actually start the gzserver
+gazebo.configure()
+//# start the simulation process
+gazebo.start()
+//# disable the dynamics
+gazebo.toggleDynamicsSimulation(false)
+//# load model
+//gazebo.spawn_model("iit-coman-robot", "model://iit-coman", 10)
+//gazebo.spawn_model( "ball", "model://ball-test", 10 )//
+gazebo.spawn_model_at_pos( "ball", "model://ball-test", 3.0, 0.0, 0.2 )
+
+
+
+//### configure components
+
+//## configure coman sim
+//# attach previously loaded model
+coman_gazebo.getModel("iit-coman-robot")
+//# execute the simulation bridge (coman)
+coman_gazebo.configure()
+
+
+coman_left_arm_JointPositionCtrl.addPortRobotside("left_arm_JointPositionCtrl", 7)
+coman_left_arm_JointPositionCtrl.addPortRobotFBside("left_arm_JointFeedback", 7)
+coman_left_arm_JointPositionCtrl.setChainandCtrlName("left_arm", "JointPositionCtrl")
+coman_left_arm_JointPositionCtrl.configure()
+
+loadComponent("coman_right_arm_JointPositionCtrl","cogimon::RTTKinematicChainJa")
+setActivity("coman_right_arm_JointPositionCtrl",0.01,12,ORO_SCHED_OTHER)
+coman_right_arm_JointPositionCtrl.addPortRobotside("right_arm_JointPositionCtrl", 7)
+coman_right_arm_JointPositionCtrl.addPortRobotFBside("right_arm_JointFeedback", 7)
+coman_right_arm_JointPositionCtrl.setChainandCtrlName("right_arm", "JointPositionCtrl")
+coman_right_arm_JointPositionCtrl.configure()
+
+
+### connect components
+
+
+## connect coman_left_arm_JointPositionCtrl to coman_gazebo
+var ConnPolicy cp;
+connect("coman_left_arm_JointPositionCtrl.left_arm_JointPositionCtrl", "coman_gazebo.left_arm_JointPositionCtrl", cp)
+connect("coman_gazebo.left_arm_JointFeedback", "coman_left_arm_JointPositionCtrl.left_arm_JointFeedback", cp)
+coman_left_arm_JointPositionCtrl.retrieveJointMappings()
+coman_left_arm_JointPositionCtrl.start()
+
+connect("coman_right_arm_JointPositionCtrl.right_arm_JointPositionCtrl", "coman_gazebo.right_arm_JointPositionCtrl", cp)
+connect("coman_gazebo.right_arm_JointFeedback", "coman_right_arm_JointPositionCtrl.right_arm_JointFeedback", cp)
+coman_right_arm_JointPositionCtrl.retrieveJointMappings()
+coman_right_arm_JointPositionCtrl.start()
+
+
+//gazebo.toggleDynamicsSimulation(true)
+
+
+
+
+
+## 
+import("rtt_ros")
+ros.import("test_orocos")
+
+## Configure and start the hello_robot component
+loadComponent("interface","Test_orocos")
+setActivity("interface",0.001,HighestPriority,ORO_SCHED_RT)
+
+## Configure and start the hello_robot component
+stream("interface.Right_arm_in", ros.topic("Coman/Right/in"))
+stream("interface.Left_arm_in", ros.topic("Coman/Left/in"))
+
+stream("interface.Right_q_arm_out", ros.topic("Coman/Right/q/out"))
+stream("interface.Left_q_arm_out", ros.topic("Coman/Left/q/out"))
+
+stream("interface.Right_Dq_arm_out", ros.topic("Coman/Right/Dq/out"))
+stream("interface.Left_Dq_arm_out", ros.topic("Coman/Left/Dq/out"))
+
+stream("interface.Right_T_arm_out", ros.topic("Coman/Right/T/out"))
+stream("interface.Left_T_arm_out", ros.topic("Coman/Left/T/out"))
+
+connect("interface.JointPositionOutputPort_left_arm", "coman_left_arm_JointPositionCtrl.command", cp)
+connect("interface.JointPositionOutputPort_right_arm", "coman_right_arm_JointPositionCtrl.command", cp)
+
+connect("coman_left_arm_JointPositionCtrl.feedback", "interface.JointPositionInputPort_left_arm", cp)
+connect("coman_right_arm_JointPositionCtrl.feedback", "interface.JointPositionInputPort_right_arm", cp)
+
+
+## Configure and start the hello_robot component
+interface.configure()
+interface.start()
