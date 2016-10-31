@@ -27,7 +27,7 @@
 #include "std_msgs/Float64MultiArray.h"
 #include "std_msgs/String.h"
 #include "geometry_msgs/Pose.h"
-#include "kuka_fri_bridge/JointStateImpedance.h"
+//#include "kuka_fri_bridge/JointStateImpedance.h"
 
 #include "sKinematics.h"
 #include "CDDynamics.h"

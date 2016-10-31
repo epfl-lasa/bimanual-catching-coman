@@ -16,7 +16,7 @@ class bimanual_ds
 {
 public:
 
-    void 				initialize(double dt, double lamda, double  beta, double kappa1, double kappa2, double Gain_A1, double Gain_A2);
+    void 				initialize(double dt, double lamda1, double lamda2, double kappa1, double kappa2, double Gain_A1, double Gain_A2);
     void 				initialize_Virrtual_object(Vector l_L_d, Vector l_R_d);
     void				Set_object_state(Vector P_O,Vector DP_O, Vector DDP_O);
     void				Set_Left_robot_state(Vector P_R_L,Vector DP_R_L, Vector DDP_R_L);
@@ -33,15 +33,16 @@ private:
     void                initialize_Gains(Matrix & M, double Gain);
     void                initialize_Gains_2(Matrix & M, double Gain);
 
+    double              _alpha;
     double              _beta;
-    double              _lamda;
+    double              _lamda1;
+    double              _lamda2;
     double              _dt;
     double              _gamma1;
     double              _gamma2;
     double              _kappa1;
     double              _kappa2;
     double              _ttc;
-    double              _alpha;
     double              _epsilon;
 
     Vector              _P_O;
@@ -79,7 +80,7 @@ private:
     Vector              _DDl_L;
 
     Matrix              _Alpha;
-    Matrix              _AlphaBeta;
+    Matrix              _Beta;
     Matrix              _A1;
     Matrix              _A2;
     Matrix              _Gamma1;

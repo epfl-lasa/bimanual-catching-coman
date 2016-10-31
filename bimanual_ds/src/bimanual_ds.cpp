@@ -27,21 +27,23 @@ void bimanual_ds::initialize_Gains(Matrix & M, double Gain)
 void bimanual_ds::initialize_Gains_2(Matrix & M, double Gain)
 {
     M.Zero();
-    M(0,0) = Gain / 3.0; // / 5.0; // / 10.0;
+    M(0,0) = Gain / 15.0; // 20.0; // / 3.0; / 5.0; / 10.0;
     M(1,1) = Gain;
     M(2,2) = Gain;
 }
 
 
-void bimanual_ds::initialize(double dt, double lamda, double  beta, double kappa1, double kappa2, double Gain_A1, double Gain_A2)
+//void bimanual_ds::initialize(double dt, double lamda, double  beta, double kappa1, double kappa2, double Gain_A1, double Gain_A2)
+void bimanual_ds::initialize(double dt, double lamda1, double  lamda2, double kappa1, double kappa2, double Gain_A1, double Gain_A2)
 {
-    _beta = beta;
-    _lamda = lamda;
+    _lamda1 = lamda1;
+    _lamda2 = lamda2;
     _dt = dt;
     _kappa1 = kappa1;
     _kappa2 = kappa2;
     _ttc = 5.0;
     _alpha = 0.0;
+    _beta = 0.0;
     _epsilon = 0.00001;
 
     _P_O.Resize(3);
@@ -84,7 +86,7 @@ void bimanual_ds::initialize(double dt, double lamda, double  beta, double kappa
     _DDP_V_L.Resize(3);
 
     _Alpha.Resize(3,3);
-    _AlphaBeta.Resize(3,3);
+    _Beta.Resize(3,3);
     _A1.Resize(3,3);
     _A2.Resize(3,3);
     _Gamma1.Resize(3,3);
@@ -153,7 +155,7 @@ void bimanual_ds::Update()
 
     // virtual object
 //    _DDP_V = _Alpha*(_DP_V) + _AlphaBeta*(_P_V - _P_O);
-    _DDP_V = _Alpha*(_DP_V - _DP_O) + _AlphaBeta*(_P_V - _P_O);
+    _DDP_V = _Alpha*(_DP_V - _DP_O) + _Beta*(_P_V - _P_O);
 
     _DP_V = _DP_V + _DDP_V*_dt;
     _P_V = _P_V + _DP_V*_dt;
@@ -229,13 +231,18 @@ void  	bimanual_ds::Set_TTC(double ttc)
 {
     _ttc = ttc;
 
-    _alpha = _lamda/(_ttc + _epsilon);
+    _alpha = _lamda1/(_ttc + _epsilon);
+    _beta = _lamda2/(_ttc + _epsilon);
 
     _Alpha.Resize(3,3);
+    _Beta.Resize(3,3);
 
     initialize_Gains(_Alpha, -_alpha);
 //    initialize_Gains(_AlphaBeta, -_beta*_alpha);
-    initialize_Gains_2(_AlphaBeta, -_beta*_alpha);
+//    initialize_Gains_2(_AlphaBeta, -_beta*_alpha);
+initialize_Gains(_Beta, -_beta);
+//    initialize_Gains_2(_Beta, -_beta);
+
 
     _gamma1 = _kappa1 / (_ttc + _epsilon);
     _gamma2 = _kappa2 / (_ttc + _epsilon);

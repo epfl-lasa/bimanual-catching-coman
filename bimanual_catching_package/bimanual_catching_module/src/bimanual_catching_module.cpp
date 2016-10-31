@@ -75,7 +75,8 @@ void bimanual_catching_module::chatterCallback_attractor_postion(const geometry_
     {
         double pos[3];
 
-        if (msg.position.x > 0.5) {
+        if (msg.position.x > 0.3) {
+//        if (msg.position.x > 0.3) {
             pos[0] = msg.position.x;
             pos[1] = msg.position.y;
             pos[2] = msg.position.z;
@@ -108,7 +109,8 @@ void bimanual_catching_module::chatterCallback_attractor_velocity(const geometry
     {
         double vel[3];
 
-        if (msg.position.x > 0.5) {
+        if (msg.position.x > 0.3) {
+//        if (msg.position.x > 0.3) {
             vel[0]=msg.position.x;
             vel[1]=msg.position.y;
             vel[2]=msg.position.z;
@@ -384,13 +386,21 @@ void bimanual_catching_module::parameterInitialization() {
 //    force_dynamical_system->initialize(dt, 10.0, 3.0, 5.0, 5.0, 40.0, 400.0);
 
     // coman
-//    force_dynamical_system->initialize(dt, 20.0, 3.0, 10.0, 10.0, 40.0, 400.0);     // r=0.2
-    force_dynamical_system->initialize(dt, 50.0, 10.0, 10.0, 10.0, 40.0, 400.0);     // r=0.2
+//    force_dynamical_system->initialize(dt, 50.0, 10.0, 10.0, 10.0, 40.0, 400.0);     // r=0.2 (video success_2)
+//    force_dynamical_system->initialize(dt, 120.0, 70.0, 20.0, 20.0, 40.0, 400.0);     // r20
+//    force_dynamical_system->initialize(dt, 100.0, 500.0, 20.0, 20.0, 40.0, 400.0);     // r20-2
+    force_dynamical_system->initialize(dt, 50.0, 500.0, 20.0, 20.0, 40.0, 400.0);     //
+
+
 
     // desired hand-object distance
     // ball radius 0.2m
     d_L_d(0) = -0.2;     d_L_d(1) = 0.2;     d_L_d(2) = -0.1;
     d_R_d(0) = -0.2;     d_R_d(1) = -0.2;     d_R_d(2) = -0.1;
+
+    // ball radius 0.15m
+//    d_L_d(0) = -0.2;     d_L_d(1) =  0.15;     d_L_d(2) = -0.1;
+//    d_R_d(0) = -0.2;     d_R_d(1) = -0.15;     d_R_d(2) = -0.1;
 
 
     mCommand = COMMAND_NONE;
