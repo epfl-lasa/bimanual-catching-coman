@@ -85,13 +85,13 @@
     </include>
 
     <model name="Ball">
-      <pose>3.0 0.0 0.20 0 0 0</pose>
+      <pose>3.0 0.0 0.30 0 0 0</pose>
       <static>0</static>
       <link name="ballLink">
         <collision name="ballCollision">
           <geometry>
-            <sphere radius="0.20">
-          <radius>0.20</radius>
+            <sphere radius="0.30">
+          <radius>0.30</radius>
           </sphere>
           </geometry>
           <surface>
@@ -106,8 +106,8 @@
 
         <visual name="ballVisual">
           <geometry>
-            <sphere radius="0.20">
-          <radius>0.20</radius>
+            <sphere radius="0.30">
+          <radius>0.30</radius>
           </sphere>
           </geometry>
         </visual>

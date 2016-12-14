@@ -1,18 +1,19 @@
 #include "ball_motion_estimation.h"
 
 
-//void chatterCallback_object(const geometry_msgs::Pose & msg) {
-
-//    Object_pos_T(0) = msg.position.x;
-//    Object_pos_T(1) = msg.position.y;
-//    Object_pos_T(2) = msg.position.z;
-//}
 
 void chatterCallback_object(const std_msgs::Float64MultiArray& msg) {
 
-    Object_pos_T(0) = msg.data[0];
-    Object_pos_T(1) = msg.data[1];
-    Object_pos_T(2) = msg.data[2];
+    measurement_count++;
+
+    if (measurement_count>9) {         // set missing measurements
+        Object_pos_T(0) = msg.data[0];
+        Object_pos_T(1) = msg.data[1];
+        Object_pos_T(2) = msg.data[2];
+    }
+
+    if (measurement_count==10)   measurement_count = 0;
+
 }
 
 
@@ -260,6 +261,9 @@ int main(int argc, char** argv) {
 
     mMocapStatus = MOCAP_IDLE;
     COM = Com_NONE;
+
+    // for sensitivity evaluation
+    measurement_count = 0;
 
     // motion capture reading thread
     pthread_t lTrackingThread;

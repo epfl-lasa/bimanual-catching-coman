@@ -27,13 +27,12 @@ void bimanual_ds::initialize_Gains(Matrix & M, double Gain)
 void bimanual_ds::initialize_Gains_2(Matrix & M, double Gain)
 {
     M.Zero();
-    M(0,0) = Gain / 15.0; // 20.0; // / 3.0; / 5.0; / 10.0;
+    M(0,0) = Gain / 15.0;
     M(1,1) = Gain;
     M(2,2) = Gain;
 }
 
 
-//void bimanual_ds::initialize(double dt, double lamda, double  beta, double kappa1, double kappa2, double Gain_A1, double Gain_A2)
 void bimanual_ds::initialize(double dt, double lamda1, double  lamda2, double kappa1, double kappa2, double Gain_A1, double Gain_A2)
 {
     _lamda1 = lamda1;
@@ -194,12 +193,8 @@ void bimanual_ds::Update()
 
 void bimanual_ds::initialize_Virrtual_object(Vector l_L_d,Vector l_R_d)
 {
-//    _l_L_d(0)=-0.2;  _l_L_d(1)=0.2;  _l_L_d(2)=-0.1;
-//    _l_R_d(0)=-0.2;  _l_R_d(1)=-0.2;  _l_R_d(2)=-0.1;
-
     _l_L_d = l_L_d;
     _l_R_d = l_R_d;
-
 
     // initial pos
     _P_V(0) = 0.3;  _P_V(1) = 0.0;  _P_V(2) = 0.0;

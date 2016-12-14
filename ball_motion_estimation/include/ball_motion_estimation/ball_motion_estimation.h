@@ -71,6 +71,7 @@ int mNbObservation = 0;
 
 double mDT = 0.03;
 
+int measurement_count = 0;
 
 geometry_msgs::Pose msg_objpos;
 geometry_msgs::Pose msg_objvel;

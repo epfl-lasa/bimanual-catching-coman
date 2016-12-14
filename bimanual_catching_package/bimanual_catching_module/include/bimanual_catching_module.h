@@ -27,7 +27,6 @@
 #include "std_msgs/Float64MultiArray.h"
 #include "std_msgs/String.h"
 #include "geometry_msgs/Pose.h"
-//#include "kuka_fri_bridge/JointStateImpedance.h"
 
 #include "sKinematics.h"
 #include "CDDynamics.h"
@@ -35,8 +34,6 @@
 
 #include "bimanual_ds.h"
 
-//double cReady_left[]  = {-PI/2.0, -PI/4.0, 0.0, -PI/2.0, 0.0, 0.0, 0.0};
-//double cReady_right[]  = {-PI/2.0, PI/4.0, 0.0, PI/2.0, PI/2.0, PI/4.0, 0.0};
 double cReady_left[]  = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 double cReady_right[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
@@ -211,8 +208,6 @@ protected:
     ofstream                    data_save;
 
 
-//    ros::Subscriber             sub_robot_left_jointPos;
-//    ros::Subscriber             sub_robot_right_jointPos;
     ros::Subscriber             sub_robot_left_jointPos_coman;
     ros::Subscriber             sub_robot_right_jointPos_coman;
     ros::Subscriber				sub_object_pos;
@@ -222,8 +217,6 @@ protected:
     ros::Subscriber				sub_ttc;
 
     ros::Publisher 				pub_command;
-//    ros::Publisher  			pub_command_pos_left;
-//    ros::Publisher 			pub_command_pos_right;
     ros::Publisher  			pub_command_pos_left_coman;
     ros::Publisher 				pub_command_pos_right_coman;
 

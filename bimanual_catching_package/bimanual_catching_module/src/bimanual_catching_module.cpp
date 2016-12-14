@@ -76,7 +76,6 @@ void bimanual_catching_module::chatterCallback_attractor_postion(const geometry_
         double pos[3];
 
         if (msg.position.x > 0.3) {
-//        if (msg.position.x > 0.3) {
             pos[0] = msg.position.x;
             pos[1] = msg.position.y;
             pos[2] = msg.position.z;
@@ -89,17 +88,6 @@ void bimanual_catching_module::chatterCallback_attractor_postion(const geometry_
         }
     }
 
-//    if (msg.position.x!=0)
-//    {
-//        double pos[3];
-
-//        pos[0]=msg.position.x;
-//        pos[1]=msg.position.y;
-//        pos[2]=msg.position.z;
-
-//        RPos_attractor.Set(pos, 3);
-//    }
-
 }
 
 
@@ -110,7 +98,6 @@ void bimanual_catching_module::chatterCallback_attractor_velocity(const geometry
         double vel[3];
 
         if (msg.position.x > 0.3) {
-//        if (msg.position.x > 0.3) {
             vel[0]=msg.position.x;
             vel[1]=msg.position.y;
             vel[2]=msg.position.z;
@@ -381,11 +368,7 @@ void bimanual_catching_module::parameterInitialization() {
 
     force_dynamical_system = new bimanual_ds();
 
-    // kuka
-//    force_dynamical_system->initialize(dt, 10.0, 3.0, 2.0, 2.0, 40.0, 400.0);
-//    force_dynamical_system->initialize(dt, 10.0, 3.0, 5.0, 5.0, 40.0, 400.0);
 
-    // coman
 //    force_dynamical_system->initialize(dt, 50.0, 10.0, 10.0, 10.0, 40.0, 400.0);     // r=0.2 (video success_2)
 //    force_dynamical_system->initialize(dt, 120.0, 70.0, 20.0, 20.0, 40.0, 400.0);     // r20
 //    force_dynamical_system->initialize(dt, 100.0, 500.0, 20.0, 20.0, 40.0, 400.0);     // r20-2
@@ -394,13 +377,21 @@ void bimanual_catching_module::parameterInitialization() {
 
 
     // desired hand-object distance
-    // ball radius 0.2m
-    d_L_d(0) = -0.2;     d_L_d(1) = 0.2;     d_L_d(2) = -0.1;
-    d_R_d(0) = -0.2;     d_R_d(1) = -0.2;     d_R_d(2) = -0.1;
+    // ball radius 0.20m
+//    d_L_d(0) = -0.2;     d_L_d(1) = 0.2;     d_L_d(2) = -0.1;
+//    d_R_d(0) = -0.2;     d_R_d(1) = -0.2;     d_R_d(2) = -0.1;
 
     // ball radius 0.15m
 //    d_L_d(0) = -0.2;     d_L_d(1) =  0.15;     d_L_d(2) = -0.1;
 //    d_R_d(0) = -0.2;     d_R_d(1) = -0.15;     d_R_d(2) = -0.1;
+
+    // ball radius 0.10m
+//    d_L_d(0) = -0.2;     d_L_d(1) =  0.03;     d_L_d(2) = -0.1;
+//    d_R_d(0) = -0.2;     d_R_d(1) = -0.03;     d_R_d(2) = -0.1;
+
+    // ball radius 0.30m
+    d_L_d(0) = -0.2;     d_L_d(1) =  0.4;     d_L_d(2) = -0.1;
+    d_R_d(0) = -0.2;     d_R_d(1) = -0.4;     d_R_d(2) = -0.1;
 
 
     mCommand = COMMAND_NONE;
@@ -413,16 +404,6 @@ void bimanual_catching_module::initKinematics() {
 
     lJointWeight.Resize(ROBOT_DOF);
 
-    // kuka
-//    lJointWeight(0) = 0.15;
-//    lJointWeight(1) = 0.35;
-//    lJointWeight(2) = 0.35;
-//    lJointWeight(3) = 1.0;
-//    lJointWeight(4) = 1.0;
-//    lJointWeight(5) = 1.0;
-//    lJointWeight(6) = 1.0;
-
-    // Coman
     lJointWeight(0) = 0.5678;
     lJointWeight(1) = 0.7768;
     lJointWeight(2) = 1.0462;
@@ -464,14 +445,6 @@ void bimanual_catching_module::initKinematics_left() {
 
     mSKinematicChain_left = new sKinematics(ROBOT_DOF, dt);
 
-    // kuka
-//    mSKinematicChain_left->setDH(0,  0.0,  0.3105, M_PI_2, 0.0, 1,  DEG2RAD( -85.), DEG2RAD( 85.), DEG2RAD( 98.0)*0.95);
-//    mSKinematicChain_left->setDH(1,  0.0,  0.00,  -M_PI_2, 0.0, 1,  DEG2RAD( -90.), DEG2RAD( 90.), DEG2RAD( 98.0)*0.90);
-//    mSKinematicChain_left->setDH(2,  0.0,  0.40,  -M_PI_2, 0.0, 1,  DEG2RAD(-100.), DEG2RAD(100.), DEG2RAD(100.0)*0.95);
-//    mSKinematicChain_left->setDH(3,  0.0,  0.00,   M_PI_2, 0.0, 1,  DEG2RAD(-120.), DEG2RAD(120.), DEG2RAD(130.0)*0.95);
-//    mSKinematicChain_left->setDH(4,  0.0,  0.39,   M_PI_2, 0.0, 1,  DEG2RAD(-140.), DEG2RAD(140.), DEG2RAD(140.0)*0.95);
-//    mSKinematicChain_left->setDH(5,  0.0,  0.00,  -M_PI_2, 0.0, 1,  DEG2RAD( -90.), DEG2RAD( 90.), DEG2RAD(180.0)*0.90); // reduced joint angle to save the fingers
-//    mSKinematicChain_left->setDH(6,  0.0,  0.07,      0.0, 0.0, 1,  DEG2RAD(-170.), DEG2RAD(170.), DEG2RAD(184.0)*0.95); // for sim lab
 
     // Coman                      i     a        d               alpha      theta0      1   min         max         maxvel
     mSKinematicChain_left->setDH(0,    0.0,     0.0733,        -M_PI_2,   -M_PI_2,     1,  -3.4034,    1.6581,     4.0);   // LShSag
@@ -484,20 +457,9 @@ void bimanual_catching_module::initKinematics_left() {
 
 
     double T0[4][4];
-//    for(int i=0; i<4; i++)
-//        for(int j=0; j<4; j++)
-//            T0[i][j] = 0.0;
-
-//    T0[0][0] = 1;
-//    T0[1][1] = 1;
-//    T0[2][2] = 1;
-//    T0[3][3] = 1;
-//    T0[0][3] = 0.0; //0.24
-//    T0[1][3] = -1.0; //-1.15;
-//    T0[2][3] = 0.0; //-0.05;
 
     T0[0][0] = 1;   T0[0][1] = 0;   T0[0][2] = 0;   T0[0][3] = 0.04;
-    T0[1][0] = 0;   T0[1][1] = 0;   T0[1][2] = 1;   T0[1][3] = 0.082; //0.2194;
+    T0[1][0] = 0;   T0[1][1] = 0;   T0[1][2] = 1;   T0[1][3] = 0.082;
     T0[2][0] = 0;   T0[2][1] = -1;  T0[2][2] = 0;   T0[2][3] = 0.324;
     T0[3][0] = 0;   T0[3][1] = 0;   T0[3][2] = 0;   T0[3][3] = 1;
 
@@ -509,7 +471,7 @@ void bimanual_catching_module::initKinematics_left() {
         for(int j=0; j<4; j++)
             TF[i][j] = 0.0;
     TF[3][3] = 1;
-    //mTF = Matrix3::SRotationY(M_PI/4.0);
+
     mTF = Matrix3::SRotationY(0.0);
 
     for(int i=0; i<3; i++)
@@ -544,7 +506,6 @@ void bimanual_catching_module::initKinematics_left() {
     mIKSolver_left.SetDofsWeights(lJointWeight);
     mTargetVelocity_left.Resize(IK_CONSTRAINTS);
 
-
 }
 
 
@@ -568,23 +529,6 @@ void bimanual_catching_module::initKinematics_right() {
 
     mSKinematicChain_right = new sKinematics(ROBOT_DOF, dt);
 
-    // KUKA
-//    mSKinematicChain_right->setDH(0,  0.0,  0.3105, M_PI_2, 0.0, 1,  DEG2RAD( -85.), DEG2RAD( 85.), DEG2RAD(98.0)*0.95);
-//    mSKinematicChain_right->setDH(1,  0.0,  0.00,-M_PI_2, 0.0, 1,  DEG2RAD( -90.), DEG2RAD( 90.), DEG2RAD(98.0)*0.90);
-//    mSKinematicChain_right->setDH(2,  0.0,  0.40,-M_PI_2, 0.0, 1,  DEG2RAD(-100.), DEG2RAD(100.), DEG2RAD(100.0)*0.95);
-//    mSKinematicChain_right->setDH(3,  0.0,  0.00, M_PI_2, 0.0, 1,  DEG2RAD(-120.), DEG2RAD(120.), DEG2RAD(130.0)*0.95);
-//    mSKinematicChain_right->setDH(4,  0.0,  0.39, M_PI_2, 0.0, 1,  DEG2RAD(-140.), DEG2RAD(140.), DEG2RAD(140.0)*0.95);
-//    mSKinematicChain_right->setDH(5,  0.0,  0.00,-M_PI_2, 0.0, 1,  DEG2RAD( -90.), DEG2RAD( 90.), DEG2RAD(180.0)*0.90);
-//    mSKinematicChain_right->setDH(6,  0.0,  0.07,    0.0, 0.0, 1,  DEG2RAD(-170.), DEG2RAD(170.), DEG2RAD(184.0)*0.95);
-
-    // Seungsu's                    i      a        d                 alpha       theta0              1   min     max     maxvel
-//    mSKinematicChain_right->setDH(0,     0.0,     0.0000,           -M_PI_2,    0.0,                1,  -3.4034,    1.6581,     4.0);
-//    mSKinematicChain_right->setDH(1,     0.0,     0.0000,            M_PI_2,    DEG2RAD(20.-90.),   1,  -2.094,     0.31415,    4.0);
-//    mSKinematicChain_right->setDH(2,    -0.015,   0.0475+0.1554,    -M_PI_2,    0.0,                1,  -1.5708,    1.5708,     4.0);
-//    mSKinematicChain_right->setDH(3,     0.0,    -0.0825-0.0710,     M_PI_2,    M_PI_2,             1,  -2.3562,    0.0,        4.0);
-//    mSKinematicChain_right->setDH(4,     0.0,     0.0000,           -M_PI_2,    M_PI_2,             1,  -1.5708,    1.5708,     4.0);
-//    mSKinematicChain_right->setDH(5,     0.0,    -0.1356-0.0425,    -M_PI_2,   -M_PI_2,             1,  -0.524,     0.524,      4.0);
-//    mSKinematicChain_right->setDH(6,     0.0,     0.0000,            M_PI_2,    0.0,                1,  -1.395,     0.785375,   4.0);
 
     // Coman                      i     a        d               alpha      theta0      1   min         max         maxvel
     mSKinematicChain_right->setDH(0,    0.0,    -0.0733,        -M_PI_2,   -M_PI_2,     1,  -3.4034,    1.6581,     4.0);   // RShSag
@@ -611,7 +555,7 @@ void bimanual_catching_module::initKinematics_right() {
         for(int j=0; j<4; j++)
             TF[i][j] = 0.0;
     TF[3][3] = 1;
-    //mTF = Matrix3::SRotationY(M_PI/4.0);
+
     mTF = Matrix3::SRotationY(0.0);
 
     for(int i=0; i<3; i++)
@@ -646,7 +590,6 @@ void bimanual_catching_module::initKinematics_right() {
     mIKSolver_right.SetDofsWeights(lJointWeight);
     mTargetVelocity_right.Resize(IK_CONSTRAINTS);
 
-
 }
 
 
@@ -656,11 +599,11 @@ void bimanual_catching_module::topicInitialization() {
     mRobot->SetControlMode(Robot::CTRLMODE_POSITION);
     ros::NodeHandle *n = mRobot->InitializeROS();
 
-//    sub_robot_left_jointPos = n->subscribe("/l_arm_pos_controller/joint_states", 3, & bimanual_catching_module::chatterCallback_robot_left_position, this);
-//    sub_robot_right_jointPos = n->subscribe("/r_arm_pos_controller/joint_states", 3, & bimanual_catching_module::chatterCallback_robot_right_position, this);
+    // robot joint pos feedback (from gazebo)
     sub_robot_left_jointPos_coman = n->subscribe("/Coman/Left/in", 3, & bimanual_catching_module::chatterCallback_robot_left_position, this);
     sub_robot_right_jointPos_coman = n->subscribe("/Coman/Right/in", 3, & bimanual_catching_module::chatterCallback_robot_right_position, this);
 
+    // object & attractor status from ball_motion_estimation
     sub_object_pos = n->subscribe("/catch/objpos", 3, & bimanual_catching_module::chatterCallback_object_postion, this);
     sub_object_vel = n->subscribe("/catch/objvel", 3, & bimanual_catching_module::chatterCallback_object_velocity, this);
 
@@ -672,8 +615,6 @@ void bimanual_catching_module::topicInitialization() {
 
     pub_command = n->advertise<std_msgs::String>("/catch/command", 3);
 
-//    pub_command_pos_left = n->advertise<kuka_fri_bridge::JointStateImpedance>("/l_arm_controller/joint_imp_cmd", 3);
-//    pub_command_pos_right = n->advertise<kuka_fri_bridge::JointStateImpedance>("/r_arm_controller/joint_imp_cmd", 3);
     pub_command_pos_left_coman = n->advertise<std_msgs::Float64MultiArray>("/Coman/Left/in", 3);
     pub_command_pos_right_coman = n->advertise<std_msgs::Float64MultiArray>("/Coman/Right/in", 3);
 
@@ -811,7 +752,6 @@ RobotInterface::Status bimanual_catching_module::RobotUpdate(){
     case COMMAND_CATCH:
 
         force_dynamical_system->Set_object_state(RPos_attractor, DRPos_attractor, DDRPos_attractor);
-//        force_dynamical_system->Set_object_state(RPos_object, DRPos_object, DDRPos_object);
 
         cout<<"obj pos sent: "<<RPos_object(0)<<"  "<<RPos_object(1)<<"  "<<RPos_object(2)<<endl;
 
@@ -851,7 +791,6 @@ RobotInterface::Status bimanual_catching_module::RobotUpdate(){
         mSKinematicChain_left->getEndPos(RPos_End_left.Array());
 
         force_dynamical_system->Set_object_state(RPos_attractor, DRPos_attractor, DDRPos_attractor);
-//        force_dynamical_system->Set_object_state(RPos_object, DRPos_object, DDRPos_object);
 
         force_dynamical_system->Set_Left_robot_state(RPos_End_left, DRPos_End_left, DDRPos_End_left);
         force_dynamical_system->Set_Right_robot_state(RPos_End_right, DRPos_End_right, DDRPos_End_right);
