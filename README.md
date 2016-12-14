@@ -26,18 +26,18 @@ Terminal 2:
 rosrun ball_motion_estimation ball_motion_estimation_node
 ```
 
-Terminal 3
+Terminal 3:
 ```
 deployer-gnulinux -s /home/kevin/catkin_ws/src/bimanual_catching/orocos_ros_interface/orocos_ros_interface.ops
 ```
 
-Terminal 4
+Terminal 4:
 
 ```
 gzclient
 ```
 
-Terminal 5
+Terminal 5:
 
 ```
 (robot-toolkit directory) ./bin/robot_simulator --config packages/bimanual_catching_package/bimanual_catching_module
