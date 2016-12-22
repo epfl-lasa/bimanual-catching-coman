@@ -368,18 +368,14 @@ void bimanual_catching_module::parameterInitialization() {
 
     force_dynamical_system = new bimanual_ds();
 
-
-//    force_dynamical_system->initialize(dt, 50.0, 10.0, 10.0, 10.0, 40.0, 400.0);     // r=0.2 (video success_2)
-//    force_dynamical_system->initialize(dt, 120.0, 70.0, 20.0, 20.0, 40.0, 400.0);     // r20
-//    force_dynamical_system->initialize(dt, 100.0, 500.0, 20.0, 20.0, 40.0, 400.0);     // r20-2
     force_dynamical_system->initialize(dt, 50.0, 500.0, 20.0, 20.0, 40.0, 400.0);     //
 
 
 
     // desired hand-object distance
     // ball radius 0.20m
-//    d_L_d(0) = -0.2;     d_L_d(1) = 0.2;     d_L_d(2) = -0.1;
-//    d_R_d(0) = -0.2;     d_R_d(1) = -0.2;     d_R_d(2) = -0.1;
+    d_L_d(0) = -0.2;     d_L_d(1) = 0.2;     d_L_d(2) = -0.1;
+    d_R_d(0) = -0.2;     d_R_d(1) = -0.2;     d_R_d(2) = -0.1;
 
     // ball radius 0.15m
 //    d_L_d(0) = -0.2;     d_L_d(1) =  0.15;     d_L_d(2) = -0.1;
@@ -390,8 +386,8 @@ void bimanual_catching_module::parameterInitialization() {
 //    d_R_d(0) = -0.2;     d_R_d(1) = -0.03;     d_R_d(2) = -0.1;
 
     // ball radius 0.30m
-    d_L_d(0) = -0.2;     d_L_d(1) =  0.4;     d_L_d(2) = -0.1;
-    d_R_d(0) = -0.2;     d_R_d(1) = -0.4;     d_R_d(2) = -0.1;
+//    d_L_d(0) = -0.2;     d_L_d(1) =  0.4;     d_L_d(2) = -0.1;
+//    d_R_d(0) = -0.2;     d_R_d(1) = -0.4;     d_R_d(2) = -0.1;
 
 
     mCommand = COMMAND_NONE;
