@@ -42,3 +42,7 @@ Terminal 5:
 ```
 (robot-toolkit directory) ./bin/robot_simulator --config packages/bimanual_catching_package/bimanual_catching_module
 ```
+
+Apply force to the ball in Gazebo to initiate the motion (e.g. Fx=-1500, Fy=0, Fz=1200)
+
+The size and the position of the ball can be set here: /orocos_ros_interface/bimanual-catching-coman.world
